@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<!-- GitHub Pages ready: upload this single file to the repository root as index.html. -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#2563EB">
+  <meta name="description" content="NEXT TOPPERS TEST PORTAL — Yash Raj's evaluation dashboard.">
+  <title>NEXT TOPPERS TEST PORTAL</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800&display=swap');
+
+    :root {
+      /* Backgrounds */
+      --bg-snow-drift: #F9FAFB;
+      --bg-clean-white: #FFFFFF;
+      /* Text & Typography */
+      --text-slate-ink: #1F2937;
+      --text-subtle-ash: #9CA3AF;
+      /* Accents & Actions */
+      --action-trust-blue: #2563EB;
+      --status-verified-green: #10B981;
+
+      --navy: #10275B;
+      --blue-50: #EFF6FF;
+      --blue-100: #DBEAFE;
+      --blue-200: #BFDBFE;
+      --line: #E5E7EB;
+      --shadow: 0 18px 55px rgba(30, 64, 175, .12);
+      --shadow-hover: 0 25px 70px rgba(30, 64, 175, .19);
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --status-gray: #64748B;
+      --status-yellow: #FBBF24;
+      --status-orange: #F97316;
+      --status-red: #7F1D1D;
+      --accent-violet: #7C3AED;
+      --accent-cyan: #06B6D4;
+      --accent-pink: #EC4899;
+      --accent-lime: #84CC16;
+      --accent-gold: #F59E0B;
+      --accent-mint: #2DD4BF;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      min-width: 320px; margin: 0; overflow-x: hidden;
+      background: var(--bg-snow-drift); color: var(--text-slate-ink);
+      font-family: Roboto, Arial, sans-serif; line-height: 1.5; isolation: isolate;
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, input:focus-visible { outline: 3px solid rgba(37, 99, 235, .35); outline-offset: 3px; }
+
+    /* Ambient background and pointer trail */
+    .aurora, .aurora::before, .aurora::after { position: fixed; pointer-events: none; z-index: -2; }
+    .aurora { inset: 0; overflow: hidden; background: var(--bg-snow-drift); }
+    .aurora::before, .aurora::after { content: ''; width: 50vw; height: 50vw; min-width: 360px; min-height: 360px; border-radius: 50%; filter: blur(12px); opacity: .42; }
+    .aurora::before { top: -23vw; left: -14vw; background: radial-gradient(circle, #C7D9FF 0, rgba(167,139,250,.24) 38%, transparent 69%); animation: driftA 17s ease-in-out infinite alternate; }
+    .aurora::after { right: -20vw; bottom: -26vw; background: radial-gradient(circle, #BCEFE0 0, rgba(45,212,191,.25) 39%, transparent 70%); animation: driftB 20s ease-in-out infinite alternate; }
+    .grid-overlay { position: fixed; z-index: -1; inset: 0; pointer-events: none; opacity: .36; background-image: linear-gradient(rgba(37,99,235,.055) 1px, transparent 1px), linear-gradient(90deg, rgba(37,99,235,.055) 1px, transparent 1px); background-size: 38px 38px; mask-image: linear-gradient(to bottom, #000, transparent 88%); }
+    #backgroundCanvas { position: fixed; z-index: -1; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: .73; }
+    .floating-orb { position: fixed; z-index: -1; width: clamp(55px, 9vw, 130px); aspect-ratio: 1; border-radius: 42% 58% 66% 34% / 47% 37% 63% 53%; pointer-events: none; filter: blur(.2px); opacity: .24; mix-blend-mode: multiply; animation: floatShape 10s ease-in-out infinite alternate; transform: translate3d(calc(var(--mx, 0) * 10px), calc(var(--my, 0) * 8px), 0); }
+    .orb-one { top: 18%; right: 6%; background: linear-gradient(135deg, var(--accent-violet), var(--accent-pink)); animation-delay: -2s; }
+    .orb-two { top: 60%; left: 5%; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-mint)); animation-delay: -5s; }
+    .orb-three { bottom: 8%; right: 20%; width: clamp(32px, 5vw, 65px); background: linear-gradient(135deg, var(--accent-gold), var(--accent-pink)); animation-delay: -7s; }
+    .cursor-glow { position: fixed; z-index: 99; pointer-events: none; width: 220px; height: 220px; margin: -110px 0 0 -110px; border-radius: 50%; background: radial-gradient(circle, rgba(37,99,235,.115) 0, rgba(37,99,235,.045) 30%, transparent 68%); transform: translate3d(-1000px,-1000px,0); transition: transform .12s linear; mix-blend-mode: multiply; }
+    .trail-dot { position: fixed; z-index: 98; pointer-events: none; width: 9px; height: 9px; border-radius: 50%; background: rgba(37,99,235,.5); transform: translate(-50%,-50%) scale(1); animation: trail .7s ease-out forwards; }
+    .tap-ripple { position: fixed; z-index: 97; pointer-events: none; width: 18px; height: 18px; border: 2px solid rgba(124,58,237,.42); border-radius: 50%; transform: translate(-50%,-50%) scale(.3); animation: tapRipple .8s cubic-bezier(.1,.7,.2,1) forwards; }
+    @keyframes trail { to { opacity: 0; transform: translate(-50%,-50%) scale(.15); } }
+    @keyframes tapRipple { to { opacity: 0; transform: translate(-50%,-50%) scale(9); } }
+    @keyframes driftA { to { transform: translate(13vw, 9vh) scale(1.18); } }
+    @keyframes driftB { to { transform: translate(-14vw, -7vh) scale(.9); } }
+    @keyframes floatShape { to { border-radius: 63% 37% 36% 64% / 38% 61% 39% 62%; rotate: 28deg; translate: 0 -25px; } }
+
+    /* Login */
+    #loginScreen { min-height: 100svh; display: grid; place-items: center; padding: 24px; }
+    .login-wrap { width: min(100%, 970px); display: grid; grid-template-columns: 1.1fr .9fr; align-items: stretch; border: 1px solid rgba(255,255,255,.78); border-radius: 30px; overflow: hidden; background: rgba(255,255,255,.7); box-shadow: var(--shadow); backdrop-filter: blur(18px); animation: enter .75s cubic-bezier(.2,.8,.2,1) both; }
+    .login-intro { position: relative; min-height: 550px; padding: clamp(32px,6vw,74px); color: white; overflow: hidden; background: linear-gradient(145deg, #10275B, #2563EB 55%, #5A8EFF); }
+    .login-intro::before, .login-intro::after { content: ''; position: absolute; border: 1px solid rgba(255,255,255,.16); border-radius: 50%; }
+    .login-intro::before { width: 430px; height: 430px; right: -170px; top: -145px; box-shadow: 0 0 0 44px rgba(255,255,255,.04), 0 0 0 89px rgba(255,255,255,.04); animation: spin 22s linear infinite; }
+    .login-intro::after { width: 280px; height: 280px; bottom: -175px; left: -100px; background: rgba(16,185,129,.23); filter: blur(2px); }
+    .brand { position: relative; z-index: 1; display: flex; align-items: center; gap: 11px; font-weight: 800; letter-spacing: .095em; font-size: .76rem; }
+    .portal-logo { display: block; width: 145px; max-height: 51px; object-fit: contain; filter: drop-shadow(0 9px 16px rgba(10,20,55,.18)); }
+    .portal-logo--header { width: 42px; height: 42px; padding: 4px; border-radius: 13px; object-fit: cover; object-position: 77% center; background: #475569; }
+    .brand-mark { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 10px; background: #fff; color: var(--action-trust-blue); font-size: 1rem; box-shadow: 0 8px 22px rgba(0,0,0,.16); }
+    .login-intro h1 { position: relative; z-index: 1; max-width: 440px; margin: 78px 0 17px; font-size: clamp(2.2rem,4.1vw,4rem); line-height: 1.04; letter-spacing: -.05em; }
+    .login-intro p { position: relative; z-index: 1; margin: 0; max-width: 375px; color: rgba(255,255,255,.77); font-size: 1rem; }
+    .orbit { position: absolute; z-index: 1; bottom: 40px; right: 50px; width: 122px; height: 122px; border: 1px solid rgba(255,255,255,.3); border-radius: 50%; animation: spin 12s linear infinite; }
+    .orbit::before, .orbit::after { content:''; position: absolute; border-radius: 50%; background: white; }
+    .orbit::before { width: 9px; height: 9px; top: 17px; left: 11px; box-shadow: 45px 88px 0 1px #82F4CE; }
+    .orbit::after { width: 5px; height: 5px; top: 74px; right: 4px; background: #FFD369; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .login-panel { display: flex; flex-direction: column; justify-content: center; padding: clamp(32px,5vw,64px); background: rgba(255,255,255,.8); }
+    .eyebrow { margin: 0 0 9px; color: var(--action-trust-blue); font-size: .73rem; font-weight: 800; letter-spacing: .15em; }
+    .login-panel h2 { margin: 0; color: var(--text-slate-ink); font-size: 1.8rem; letter-spacing: -.04em; }
+    .login-panel > p { margin: 9px 0 31px; color: #64748B; }
+    .field { display: grid; gap: 8px; margin-bottom: 18px; color: #475569; font-size: .85rem; font-weight: 700; }
+    .input-wrap { position: relative; }
+    .input-wrap span { position: absolute; top: 50%; left: 15px; transform: translateY(-50%); color: #94A3B8; }
+    .field input { width: 100%; height: 53px; padding: 0 15px 0 43px; border: 1px solid #D8E1EF; border-radius: 12px; background: rgba(249,250,251,.85); color: var(--text-slate-ink); transition: border-color .2s, box-shadow .2s, background .2s; }
+    .field input:focus { border-color: var(--action-trust-blue); background: white; box-shadow: 0 0 0 4px rgba(37,99,235,.11); outline: none; }
+    .login-button { position: relative; isolation: isolate; overflow: hidden; width: 100%; min-height: 54px; margin-top: 9px; border: 0; border-radius: 12px; background: var(--action-trust-blue); color: white; font-weight: 800; letter-spacing: .02em; box-shadow: 0 12px 23px rgba(37,99,235,.24); transition: transform .25s, box-shadow .25s; }
+    .login-button::after { content: ''; position: absolute; z-index: -1; inset: 0; background: linear-gradient(110deg, transparent 25%, rgba(255,255,255,.35) 47%, transparent 69%); transform: translateX(-120%); transition: transform .6s ease; }
+    .login-button:hover { transform: translateY(-2px); box-shadow: 0 17px 28px rgba(37,99,235,.34); }
+    .login-button:hover::after { transform: translateX(120%); }
+    .login-hint { margin: 22px 0 0; color: var(--text-subtle-ash); font-size: .75rem; text-align: center; }
+
+    /* Dashboard */
+    #dashboard { display: none; min-height: 100vh; }
+    .site-header { position: sticky; z-index: 20; top: 0; height: 74px; border-bottom: 1px solid rgba(219,234,254,.8); background: rgba(249,250,251,.76); backdrop-filter: blur(16px); }
+    .site-header::after { content: ''; position: absolute; right: 0; bottom: -1px; left: 0; height: 2px; background: linear-gradient(90deg, var(--action-trust-blue), var(--accent-violet), var(--accent-cyan), var(--status-verified-green)); background-size: 300% 100%; animation: gradientFlow 9s linear infinite; }
+    .header-inner { max-width: 1220px; height: 100%; margin: auto; padding: 0 26px; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+    .header-title { display: flex; align-items: center; gap: 11px; color: var(--navy); font-size: clamp(.78rem,2.5vw,1rem); font-weight: 800; letter-spacing: .06em; white-space: nowrap; }
+    .header-title .brand-mark { background: var(--action-trust-blue); color: white; }
+    .user-chip { display: flex; align-items: center; gap: 8px; padding: 7px 11px 7px 8px; border: 1px solid #DCE8FF; border-radius: 999px; background: white; color: #475569; font-size: .7rem; font-weight: 800; letter-spacing: .04em; white-space: nowrap; }
+    .user-avatar { display: block; width: 31px; height: 31px; border: 2px solid white; border-radius: 50%; object-fit: cover; background: linear-gradient(135deg,var(--action-trust-blue),#6E9BFF); box-shadow: 0 3px 10px rgba(37,99,235,.25); }
+    .dashboard-main { width: min(100% - 36px, 1168px); margin: 0 auto; padding: clamp(34px,5vw,64px) 0 78px; }
+    .hero { display: flex; justify-content: space-between; align-items: end; gap: 30px; margin-bottom: 33px; animation: enter .6s .05s both; }
+    .hero h1 { margin: 0; color: var(--text-slate-ink); font-size: clamp(2rem,5vw,3.35rem); line-height: 1; letter-spacing: -.055em; }
+    .hero p { max-width: 515px; margin: 14px 0 0; color: #64748B; }
+    .live-pill { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 8px; padding: 9px 12px; border: 1px solid #BDEBD9; border-radius: 999px; background: #F0FDF8; color: #047857; font-size: .72rem; font-weight: 800; letter-spacing: .05em; }
+    .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--status-verified-green); box-shadow: 0 0 0 0 rgba(16,185,129,.55); animation: ping 1.8s infinite; }
+    @keyframes ping { 70%,100% { box-shadow: 0 0 0 7px rgba(16,185,129,0); } }
+    .section-card { margin-top: 25px; padding: clamp(18px,3vw,30px); border: 1px solid rgba(219,234,254,.9); border-radius: var(--radius-lg); background: rgba(255,255,255,.83); box-shadow: 0 12px 38px rgba(37,99,235,.055); animation: enter .65s both; }
+    .section-card:nth-of-type(2) { animation-delay: .12s; }
+    .profile-card { position: relative; display: grid; grid-template-columns: minmax(180px, .76fr) 1.24fr; gap: clamp(22px, 4vw, 48px); align-items: center; overflow: hidden; border-color: rgba(167,139,250,.27); background: linear-gradient(120deg, rgba(255,255,255,.92), rgba(248,250,255,.84)); }
+    .profile-card::before { content: ''; position: absolute; top: -140px; right: -120px; width: 350px; height: 350px; border-radius: 50%; background: radial-gradient(circle, rgba(124,58,237,.18), transparent 67%); pointer-events: none; animation: profileHalo 8s ease-in-out infinite alternate; }
+    .profile-visual { position: relative; z-index: 1; display: grid; place-items: center; min-height: 202px; }
+    .profile-photo-shell { position: relative; width: min(185px, 100%); aspect-ratio: 1; padding: 7px; border-radius: 32% 68% 61% 39% / 39% 41% 59% 61%; background: conic-gradient(from 40deg, var(--action-trust-blue), var(--accent-violet), var(--accent-pink), var(--accent-mint), var(--action-trust-blue)); box-shadow: 0 22px 40px rgba(37,99,235,.23); animation: portraitMorph 10s ease-in-out infinite alternate; }
+    .profile-photo { display: block; width: 100%; height: 100%; border: 4px solid white; border-radius: inherit; object-fit: cover; background: #DBEAFE; }
+    .profile-status { position: absolute; right: -5px; bottom: 14px; padding: 7px 10px; border: 2px solid white; border-radius: 999px; background: #ECFDF5; color: #047857; font-size: .65rem; font-weight: 800; letter-spacing: .06em; box-shadow: 0 8px 18px rgba(5,150,105,.16); }
+    .profile-content { position: relative; z-index: 1; }
+    .profile-content .section-kicker { color: var(--accent-violet); }
+    .profile-content h2 { margin: 0; font-size: clamp(1.45rem,3vw,2rem); letter-spacing: -.045em; }
+    .profile-content > p { max-width: 550px; margin: 7px 0 20px; color: #64748B; font-size: .88rem; }
+    .profile-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .profile-detail { min-height: 63px; padding: 10px 12px; border: 1px solid #E7EAF4; border-radius: 12px; background: rgba(255,255,255,.86); transition: transform .2s, border-color .2s, box-shadow .2s; }
+    .profile-detail:hover { --card-lift: -3px; border-color: #C4B5FD; box-shadow: 0 9px 20px rgba(124,58,237,.1); }
+    .profile-detail span { display: block; color: #94A3B8; font-size: .62rem; font-weight: 800; letter-spacing: .09em; }
+    .profile-detail strong { display: block; overflow: hidden; margin-top: 3px; color: #334155; font-size: .79rem; text-overflow: ellipsis; white-space: nowrap; }
+    @keyframes portraitMorph { to { border-radius: 53% 47% 35% 65% / 58% 30% 70% 42%; rotate: 5deg; } }
+    @keyframes profileHalo { to { transform: scale(1.16) translate(-24px, 18px); opacity: .7; } }
+    @keyframes gradientFlow { to { background-position: 300% 0; } }
+    /* Cursor-reactive cards: light 3D motion, press feedback and a moving highlight. */
+    .reactive-card { --tilt-x: 0deg; --tilt-y: 0deg; --card-lift: 0px; position: relative; transform: perspective(950px) translateY(var(--card-lift)) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)); transform-style: preserve-3d; will-change: transform; transition: transform .17s ease-out, box-shadow .2s ease, border-color .2s ease; }
+    .reactive-card::after { content: ''; position: absolute; z-index: 2; inset: 0; border-radius: inherit; pointer-events: none; background: radial-gradient(circle at var(--shine-x, 50%) var(--shine-y, 50%), rgba(255,255,255,.48), transparent 34%); opacity: 0; transition: opacity .2s; }
+    .reactive-card.is-reacting::after { opacity: 1; }
+    .reactive-card.is-pressed { --card-lift: 1px; transform: perspective(950px) translateY(var(--card-lift)) scale(.992); transition-duration: .08s; }
+    .section-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 18px; margin-bottom: 20px; }
+    .section-kicker { margin: 0 0 4px; color: var(--action-trust-blue); font-size: .7rem; font-weight: 800; letter-spacing: .16em; }
+    .section-head h2 { margin: 0; font-size: clamp(1.3rem,3vw,1.65rem); letter-spacing: -.04em; }
+    .section-note { margin: 0; color: var(--text-subtle-ash); font-size: .78rem; text-align: right; }
+    .accordion-list { display: grid; gap: 13px; }
+    .accordion { overflow: hidden; border: 1px solid #E4EAF3; border-radius: var(--radius-md); background: white; transition: transform .25s, box-shadow .25s, border-color .25s; }
+    .accordion:hover { border-color: var(--blue-200); box-shadow: 0 10px 28px rgba(37,99,235,.08); --card-lift: -2px; }
+    .accordion-toggle { display: grid; grid-template-columns: 42px 1fr auto 19px; align-items: center; gap: 14px; width: 100%; padding: 17px 19px; border: 0; background: transparent; color: inherit; text-align: left; }
+    .accordion-icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; background: var(--blue-50); color: var(--action-trust-blue); font-size: 1.15rem; }
+    .accordion-title { display: block; font-weight: 800; font-size: 1rem; }
+    .accordion-subtitle { display: block; margin-top: 2px; color: var(--text-subtle-ash); font-size: .76rem; font-weight: 500; }
+    .accordion-count { padding: 5px 9px; border-radius: 999px; background: #F1F5F9; color: #64748B; font-size: .7rem; font-weight: 800; }
+    .chevron { color: #94A3B8; transition: transform .34s cubic-bezier(.2,.8,.2,1); }
+    .accordion.open .chevron { transform: rotate(180deg); color: var(--action-trust-blue); }
+    .accordion-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .4s cubic-bezier(.2,.8,.2,1); }
+    .accordion.open .accordion-panel { grid-template-rows: 1fr; }
+    .accordion-panel-inner { min-height: 0; overflow: hidden; }
+    .rows { padding: 0 13px 14px; }
+    .assessment-row { display: grid; grid-template-columns: 72px 1fr minmax(110px, 150px); align-items: center; gap: 14px; min-height: 64px; padding: 9px 10px; border-top: 1px solid #F0F3F8; transition: background .2s, transform .2s; }
+    .assessment-row:hover { background: #FAFCFF; transform: translateX(3px); }
+    .micro-row { grid-template-columns: 72px 1fr minmax(110px, 150px); }
+    .micro-topics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin: 5px 0 2px; }
+    .subject-topic { min-width: 0; padding: 6px 7px; border-radius: 8px; background: #F8FAFC; color: #475569; font-size: .69rem; font-weight: 600; line-height: 1.3; }
+    .subject-topic b { display: block; margin-bottom: 2px; font-size: .61rem; letter-spacing: .06em; }
+    .subject-physics { border-left: 3px solid var(--accent-violet); } .subject-physics b { color: var(--accent-violet); }
+    .subject-chemistry { border-left: 3px solid var(--accent-mint); } .subject-chemistry b { color: #059669; }
+    .subject-maths { border-left: 3px solid var(--accent-gold); } .subject-maths b { color: #B45309; }
+    .test-number { color: var(--action-trust-blue); font-size: .75rem; font-weight: 800; }
+    .topic { margin: 0; color: #334155; font-size: .88rem; font-weight: 700; }
+    .date { margin: 3px 0 0; color: var(--text-subtle-ash); font-size: .73rem; }
+    .mark-pill { justify-self: end; min-width: 112px; padding: 7px 9px; border: 0; border-radius: 9px; color: white; font-size: .7rem; font-weight: 800; letter-spacing: .065em; text-align: center; box-shadow: inset 0 1px rgba(255,255,255,.26); }
+    .status-upcoming { background: var(--status-gray); }
+    .status-green { background: var(--status-verified-green); }
+    .status-yellow { background: var(--status-yellow); color: #3D2D00; }
+    .status-orange { background: var(--status-orange); }
+    .status-red { background: var(--status-red); }
+    .final-evaluation { margin-top: 10px; padding: 16px; border: 1px solid #E4EAF3; border-radius: 13px; background: linear-gradient(135deg,#fff,#F8FBFF); }
+    .final-evaluation:first-child { margin-top: 0; }
+    .final-top { display: flex; justify-content: space-between; gap: 15px; margin-bottom: 12px; }
+    .final-title { margin: 0; color: #334155; font-size: .92rem; font-weight: 800; }
+    .final-topic { margin: 4px 0 0; color: #64748B; font-size: .74rem; }
+    .best-label { align-self: start; padding: 5px 8px; border-radius: 6px; background: #EAF8F2; color: #047857; font-size: .65rem; font-weight: 800; letter-spacing: .07em; white-space: nowrap; }
+    .attempts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .attempt { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px; border: 1px solid #EDF1F6; border-radius: 10px; background: white; }
+    .attempt-label { color: #64748B; font-size: .72rem; font-weight: 700; }
+    .attempt-date { display: block; margin-top: 2px; color: #94A3B8; font-size: .66rem; }
+    .attempt .mark-pill { min-width: 81px; padding: 5px 6px; font-size: .64rem; }
+    .best-attempt { outline: 2px solid rgba(16,185,129,.35); background: #F5FFFA; }
+    .best-attempt .attempt-label::after { content: ' • BEST'; color: #059669; font-size: .61rem; letter-spacing: .05em; }
+
+    .sheet-state { display: flex; align-items: center; gap: 9px; padding: 13px; color: #64748B; font-size: .84rem; }
+    .loading-spinner { width: 18px; height: 18px; border: 2px solid #BFDBFE; border-top-color: var(--action-trust-blue); border-radius: 50%; animation: spin .75s linear infinite; }
+    .table-shell { max-height: 410px; overflow: auto; border: 1px solid #E4EAF3; border-radius: var(--radius-md); background: white; scrollbar-color: #B9CDFB transparent; scrollbar-width: thin; }
+    .marks-table { width: 100%; border-collapse: collapse; min-width: 455px; }
+    .marks-table th { position: sticky; z-index: 1; top: 0; padding: 13px 17px; background: var(--action-trust-blue); color: white; text-align: left; font-size: .72rem; letter-spacing: .07em; }
+    .marks-table td { padding: 11px 17px; border-bottom: 1px solid #EEF2F7; color: #475569; font-size: .84rem; }
+    .marks-table tbody tr { transition: background .18s; }
+    .marks-table tbody tr:hover { background: #F8FBFF; }
+    .marks-table tbody tr:last-child td { border-bottom: 0; }
+    .marks-table .mark-pill { justify-self: start; display: inline-block; min-width: 90px; }
+    .empty-state { padding: 28px; color: #94A3B8; text-align: center; font-size: .86rem; }
+    .source-note { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 13px 2px 0; color: #94A3B8; font-size: .72rem; }
+    .reload-button { border: 0; background: transparent; color: var(--action-trust-blue); font-size: .72rem; font-weight: 800; }
+    .reload-button:hover { text-decoration: underline; }
+    @keyframes enter { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 720px) {
+      .login-wrap { grid-template-columns: 1fr; max-width: 500px; }
+      .login-intro { min-height: auto; padding: 31px; }
+      .login-intro h1 { margin-top: 42px; font-size: 2.2rem; }
+      .login-intro p, .orbit { display: none; }
+      .login-panel { padding: 32px 27px; }
+      .header-inner { padding: 0 17px; }
+      .user-chip { padding-right: 8px; font-size: 0; }
+      .dashboard-main { width: min(100% - 28px, 1168px); }
+      .hero { display: block; margin-bottom: 25px; }
+      .live-pill { margin-top: 20px; }
+      .section-head { align-items: start; }
+      .section-note { display: none; }
+      .profile-card { grid-template-columns: 1fr; gap: 6px; }
+      .profile-visual { min-height: 160px; justify-items: start; padding-left: 8px; }
+      .profile-photo-shell { width: 145px; }
+      .profile-details { grid-template-columns: 1fr; }
+      .accordion-toggle { grid-template-columns: 39px 1fr auto 15px; gap: 10px; padding: 14px; }
+      .accordion-icon { width: 39px; height: 39px; }
+      .accordion-count { display: none; }
+      .assessment-row { grid-template-columns: 53px 1fr; gap: 6px 10px; padding: 11px 5px; }
+      .micro-topics { grid-template-columns: 1fr; gap: 4px; }
+      .mark-pill { grid-column: 2; justify-self: start; min-width: 104px; }
+      .attempts { grid-template-columns: 1fr; }
+      .source-note { align-items: flex-start; flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; } .cursor-glow { display: none; } }
+  </style>
+</head>
+<body>
+  <div class="aurora"></div>
+  <div class="grid-overlay"></div>
+  <canvas id="backgroundCanvas" aria-hidden="true"></canvas>
+  <span class="floating-orb orb-one" aria-hidden="true"></span>
+  <span class="floating-orb orb-two" aria-hidden="true"></span>
+  <span class="floating-orb orb-three" aria-hidden="true"></span>
+  <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+
+  <section id="loginScreen" aria-label="Portal login">
+    <div class="login-wrap">
+      <div class="login-intro">
+        <div class="brand"><img class="portal-logo" data-portal-logo alt="Next Toppers logo"></div>
+        <h1>Learn. Track.<br>Top the next test.</h1>
+        <p>A focused evaluation workspace built to turn consistent effort into exceptional results.</p>
+        <div class="orbit" aria-hidden="true"></div>
+      </div>
+      <div class="login-panel">
+        <p class="eyebrow">SECURE STUDENT ACCESS</p>
+        <h2>Welcome back</h2>
+        <p>Sign in to view your personal performance portal.</p>
+        <form id="loginForm" autocomplete="off">
+          <label class="field">PHONE NUMBER
+            <span class="input-wrap"><span>⌕</span><input id="phone" type="tel" inputmode="numeric" maxlength="10" placeholder="Enter phone number" required></span>
+          </label>
+          <label class="field">PASSWORD
+            <span class="input-wrap"><span>◉</span><input id="password" type="password" placeholder="Enter password" required></span>
+          </label>
+          <button class="login-button" type="submit">ENTER PORTAL <span aria-hidden="true">→</span></button>
+        </form>
+        <p class="login-hint">Your progress is private and visible only after sign-in.</p>
+      </div>
+    </div>
+  </section>
+
+  <main id="dashboard" aria-hidden="true">
+    <header class="site-header">
+      <div class="header-inner">
+        <div class="header-title"><img class="portal-logo portal-logo--header" data-portal-logo alt="Next Toppers logo"> NEXT TOPPERS TEST PORTAL</div>
+        <div class="user-chip"><img class="user-avatar" data-profile-photo alt="Yash Raj"><span>LOGGED IN AS YASH RAJ</span></div>
+      </div>
+    </header>
+    <div class="dashboard-main">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">PERFORMANCE COMMAND CENTER</p>
+          <h1>Evaluations</h1>
+          <p>Every checkpoint of your Class 12 PCM preparation, organised for clarity and momentum.</p>
+        </div>
+        <div class="live-pill"><span class="live-dot"></span> ACADEMIC TRACK ACTIVE</div>
+      </section>
+
+      <section class="section-card profile-card" aria-labelledby="profileHeading">
+        <div class="profile-visual">
+          <div class="profile-photo-shell"><img class="profile-photo" data-profile-photo alt="Portrait of Yash Raj"><span class="profile-status">● STUDENT ACTIVE</span></div>
+        </div>
+        <div class="profile-content">
+          <p class="section-kicker">STUDENT PROFILE</p>
+          <h2 id="profileHeading">Yash Raj</h2>
+          <p>Class 12 student · NEXT TOPPERS learning track · PCM evaluation dashboard.</p>
+          <div class="profile-details">
+            <div class="profile-detail"><span>PHONE NUMBER</span><strong>9060170251</strong></div>
+            <div class="profile-detail"><span>EMAIL ADDRESS</span><strong>akhisweety01@gmail.com</strong></div>
+            <div class="profile-detail"><span>CLASS</span><strong>12TH</strong></div>
+            <div class="profile-detail"><span>FATHER'S NAME</span><strong>Akhilesh Kumar</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-card" aria-labelledby="evaluationsHeading">
+        <div class="section-head">
+          <div><p class="section-kicker">TEST SCHEDULE</p><h2 id="evaluationsHeading">Your evaluation roadmap</h2></div>
+          <p class="section-note">Tap any category to reveal topics and marks</p>
+        </div>
+        <div id="accordionList" class="accordion-list"></div>
+      </section>
+
+      <section class="section-card" aria-labelledby="cgpaHeading">
+        <div class="section-head">
+          <div><p class="section-kicker">LIVE GOOGLE SHEET</p><h2 id="cgpaHeading">CGPA till now</h2></div>
+          <p class="section-note">Live marks synced after login</p>
+        </div>
+        <div id="sheetContent" class="table-shell"><div class="sheet-state"><span class="loading-spinner"></span>Waiting for secure sign-in…</div></div>
+        <div class="source-note"><span id="sheetMessage">Data is loaded from your Google Apps Script web app.</span><button type="button" class="reload-button" id="reloadButton">↻ REFRESH DATA</button></div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const GOOGLE_SHEET_API_URL = "https://script.google.com/macros/s/AKfycbxmoqKIM0ysMMu-uj4hnL7hqx0IMzV8_pSMdOe2fh45Py9s4mL1usKTDiPzSUe_fed_/exec"; // Paste or replace your Google Apps Script Web App URL here.
+    const PROFILE_PHOTO_DATA = "data:image/webp;base64,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";
+    const PORTAL_LOGO_DATA = "data:image/webp;base64,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";
+
+    /* EDIT MARKS HERE: all scheduled marks begin as UPCOMING. Exactly 40 weekly micro tests are listed.
+       Note: Apr 6, 2026 + 39 weekly intervals is Jan 4, 2027. Jan 11 would be a 41st date, so it is not included. */
+    const microAssignments = [
+      { number: "Micro 01", date: "April 6, 2026", physics: "Electric charge and Coulomb's law", chemistry: "Solid state: unit cells", mathematics: "Relations", mark: "UPCOMING" },
+      { number: "Micro 02", date: "April 13, 2026", physics: "Electric field and field lines", chemistry: "Solid state: crystal lattices", mathematics: "Functions", mark: "UPCOMING" },
+      { number: "Micro 03", date: "April 20, 2026", physics: "Gauss's law and applications", chemistry: "Solid state: defects", mathematics: "Inverse trigonometric functions", mark: "UPCOMING" },
+      { number: "Micro 04", date: "April 27, 2026", physics: "Electric potential", chemistry: "Solutions: concentration terms", mathematics: "Matrices: basics", mark: "UPCOMING" },
+      { number: "Micro 05", date: "May 4, 2026", physics: "Capacitance and dielectrics", chemistry: "Solutions: colligative properties", mathematics: "Matrix operations", mark: "UPCOMING" },
+      { number: "Micro 06", date: "May 11, 2026", physics: "Current and drift velocity", chemistry: "Electrochemistry: conductance", mathematics: "Determinants: properties", mark: "UPCOMING" },
+      { number: "Micro 07", date: "May 18, 2026", physics: "Kirchhoff's laws", chemistry: "Electrochemistry: Nernst equation", mathematics: "Matrices and determinants applications", mark: "UPCOMING" },
+      { number: "Micro 08", date: "May 25, 2026", physics: "Resistance and resistivity", chemistry: "Chemical kinetics: rate law", mathematics: "Continuity", mark: "UPCOMING" },
+      { number: "Micro 09", date: "June 1, 2026", physics: "Lorentz force", chemistry: "Chemical kinetics: order and half-life", mathematics: "Differentiability", mark: "UPCOMING" },
+      { number: "Micro 10", date: "June 8, 2026", physics: "Biot-Savart law", chemistry: "Surface chemistry: adsorption", mathematics: "Derivatives", mark: "UPCOMING" },
+      { number: "Micro 11", date: "June 15, 2026", physics: "Ampere's circuital law", chemistry: "Surface chemistry: colloids and catalysts", mathematics: "Applications of derivatives", mark: "UPCOMING" },
+      { number: "Micro 12", date: "June 22, 2026", physics: "Magnetic dipole and torque", chemistry: "p-Block: Group 15", mathematics: "Indefinite integrals", mark: "UPCOMING" },
+      { number: "Micro 13", date: "June 29, 2026", physics: "Magnetism and matter", chemistry: "p-Block: Groups 16 and 17", mathematics: "Methods of integration", mark: "UPCOMING" },
+      { number: "Micro 14", date: "July 6, 2026", physics: "Electromagnetic induction", chemistry: "d-Block elements", mathematics: "Definite integrals", mark: "UPCOMING" },
+      { number: "Micro 15", date: "July 13, 2026", physics: "Lenz's law and self induction", chemistry: "f-Block elements", mathematics: "Applications of integrals", mark: "UPCOMING" },
+      { number: "Micro 16", date: "July 20, 2026", physics: "Alternating current", chemistry: "Coordination: nomenclature", mathematics: "Differential equations: formation", mark: "UPCOMING" },
+      { number: "Micro 17", date: "July 27, 2026", physics: "Transformer and resonance", chemistry: "Coordination: bonding and isomerism", mathematics: "Differential equations: solutions", mark: "UPCOMING" },
+      { number: "Micro 18", date: "August 3, 2026", physics: "Electromagnetic waves", chemistry: "Haloalkanes and haloarenes", mathematics: "Vector algebra: basics", mark: "UPCOMING" },
+      { number: "Micro 19", date: "August 10, 2026", physics: "Ray optics: mirrors", chemistry: "Haloalkanes: substitution reactions", mathematics: "Vector dot and cross products", mark: "UPCOMING" },
+      { number: "Micro 20", date: "August 17, 2026", physics: "Ray optics: refraction", chemistry: "Alcohols and their reactions", mathematics: "3D geometry: direction cosines", mark: "UPCOMING" },
+      { number: "Micro 21", date: "August 24, 2026", physics: "Optical instruments", chemistry: "Phenols and acidity", mathematics: "3D geometry: lines", mark: "UPCOMING" },
+      { number: "Micro 22", date: "August 31, 2026", physics: "Wave optics: interference", chemistry: "Ethers", mathematics: "3D geometry: planes", mark: "UPCOMING" },
+      { number: "Micro 23", date: "September 7, 2026", physics: "Wave optics: diffraction", chemistry: "Aldehydes and nomenclature", mathematics: "Linear programming formulation", mark: "UPCOMING" },
+      { number: "Micro 24", date: "September 14, 2026", physics: "Photoelectric effect", chemistry: "Ketones and reactions", mathematics: "Probability: basic concepts", mark: "UPCOMING" },
+      { number: "Micro 25", date: "September 21, 2026", physics: "Dual nature and de Broglie relation", chemistry: "Carboxylic acids", mathematics: "Conditional probability", mark: "UPCOMING" },
+      { number: "Micro 26", date: "September 28, 2026", physics: "Atoms: Bohr model", chemistry: "Amines", mathematics: "Bayes' theorem", mark: "UPCOMING" },
+      { number: "Micro 27", date: "October 5, 2026", physics: "Nuclei and radioactivity", chemistry: "Biomolecules", mathematics: "Random variables", mark: "UPCOMING" },
+      { number: "Micro 28", date: "October 12, 2026", physics: "Semiconductors: diode", chemistry: "Polymers", mathematics: "Relations and functions revision", mark: "UPCOMING" },
+      { number: "Micro 29", date: "October 19, 2026", physics: "Semiconductors: logic gates", chemistry: "Chemistry in everyday life", mathematics: "Inverse trigonometry revision", mark: "UPCOMING" },
+      { number: "Micro 30", date: "October 26, 2026", physics: "Electrostatics numerical practice", chemistry: "Solid state and solutions revision", mathematics: "Matrices and determinants revision", mark: "UPCOMING" },
+      { number: "Micro 31", date: "November 2, 2026", physics: "Current electricity numerical practice", chemistry: "Electrochemistry and kinetics revision", mathematics: "Continuity and differentiability revision", mark: "UPCOMING" },
+      { number: "Micro 32", date: "November 9, 2026", physics: "Magnetism and EMI revision", chemistry: "p-, d- and f-Block revision", mathematics: "Applications of derivatives revision", mark: "UPCOMING" },
+      { number: "Micro 33", date: "November 16, 2026", physics: "AC and EM waves numerical practice", chemistry: "Coordination compounds revision", mathematics: "Integrals revision", mark: "UPCOMING" },
+      { number: "Micro 34", date: "November 23, 2026", physics: "Ray and wave optics revision", chemistry: "Organic reaction mechanisms", mathematics: "Applications of integrals and differential equations", mark: "UPCOMING" },
+      { number: "Micro 35", date: "November 30, 2026", physics: "Modern physics revision", chemistry: "Carbonyl compounds and amines revision", mathematics: "Vector algebra revision", mark: "UPCOMING" },
+      { number: "Micro 36", date: "December 7, 2026", physics: "Semiconductor electronics revision", chemistry: "Biomolecules, polymers and daily life", mathematics: "3D geometry revision", mark: "UPCOMING" },
+      { number: "Micro 37", date: "December 14, 2026", physics: "Electrostatics to magnetism mixed test", chemistry: "Physical chemistry mixed test", mathematics: "Linear programming and probability revision", mark: "UPCOMING" },
+      { number: "Micro 38", date: "December 21, 2026", physics: "EMI to optics mixed test", chemistry: "Inorganic chemistry mixed test", mathematics: "Algebra and calculus mixed test", mark: "UPCOMING" },
+      { number: "Micro 39", date: "December 28, 2026", physics: "Modern physics full revision", chemistry: "Organic chemistry full revision", mathematics: "Vectors, 3D and probability mixed test", mark: "UPCOMING" },
+      { number: "Micro 40", date: "January 4, 2027", physics: "Full Class 12 Physics mock", chemistry: "Full Class 12 Chemistry mock", mathematics: "Full Class 12 Mathematics mock", mark: "UPCOMING" }
+    ];
+
+    const majorAssignments = [
+      { number: "Major 01", date: "June 1, 2026", topic: "PCM Foundation — Physics: Electrostatics to Electromagnetic Waves; Chemistry: Solid State to Surface Chemistry; Mathematics: Relations, Functions, Inverse Trigonometry, Matrices and Determinants", mark: "UPCOMING" },
+      { number: "Major 02", date: "July 27, 2026", topic: "PCM Core — Physics: Optics to Semiconductor Electronics; Chemistry: p-Block, d/f-Block and Coordination Compounds; Mathematics: Continuity, Differentiability and Applications of Derivatives", mark: "UPCOMING" },
+      { number: "Major 03", date: "October 30, 2026", topic: "PCM Advanced — Physics: Complete Class 12 revision; Chemistry: Haloalkanes through Chemistry in Everyday Life; Mathematics: Integrals, Applications of Integrals and Differential Equations", mark: "UPCOMING" },
+      { number: "Major 04", date: "December 26, 2026", topic: "Full Class 12 PCM — all Physics, Chemistry and Mathematics chapters including Vector Algebra, 3D Geometry, Linear Programming and Probability", mark: "UPCOMING" }
+    ];
+
+    const finalEvaluations = [
+      { number: "Evaluation 01", title: "Half Syllabus Class 12 PCM", topic: "Physics: Electrostatics to Electromagnetic Waves • Chemistry: Physical Chemistry, p-Block, d/f-Block and Coordination • Mathematics: Relations through Applications of Derivatives", attempts: [
+        { label: "1st Attempt", date: "August 23, 2026", mark: "UPCOMING" },
+        { label: "2nd Attempt", date: "August 30, 2026", mark: "UPCOMING" }
+      ]},
+      { number: "Evaluation 02", title: "Full Syllabus Class 12 PCM", topic: "Complete Class 12 Physics, Chemistry and Mathematics syllabus", attempts: [
+        { label: "1st Attempt", date: "January 17, 2027", mark: "UPCOMING" },
+        { label: "2nd Attempt", date: "January 24, 2027", mark: "UPCOMING" }
+      ]}
+    ];
+
+    const statusForMark = (mark) => {
+      if (String(mark).trim().toUpperCase() === "UPCOMING" || mark === "" || mark === null || mark === undefined) return "status-upcoming";
+      const value = Number(mark);
+      if (Number.isNaN(value)) return "status-upcoming";
+      if (value > 8.0) return "status-green";
+      if (value > 7.0) return "status-yellow";
+      if (value > 4.0) return "status-orange";
+      return "status-red";
+    };
+
+    const escapeHTML = (value) => String(value).replace(/[&<>"']/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[character]);
+    const displayMark = (mark) => {
+      const value = Number(mark);
+      return String(mark).trim().toUpperCase() === "UPCOMING" || !Number.isFinite(value) ? "UPCOMING" : `${value.toFixed(1)} / 10.0`;
+    };
+    const markPill = (mark) => `<span class="mark-pill ${statusForMark(mark)}">${escapeHTML(displayMark(mark))}</span>`;
+
+    function standardRows(items) {
+      return items.map(item => `<article class="assessment-row"><span class="test-number">${escapeHTML(item.number)}</span><div><p class="topic">${escapeHTML(item.topic)}</p><p class="date">${escapeHTML(item.date)}</p></div>${markPill(item.mark)}</article>`).join("");
+    }
+
+    function microRows(items) {
+      const subject = (className, label, value) => `<span class="subject-topic ${className}"><b>${label}</b>${escapeHTML(value)}</span>`;
+      return items.map(item => `<article class="assessment-row micro-row"><span class="test-number">${escapeHTML(item.number)}</span><div><p class="date">${escapeHTML(item.date)} · THREE-SUBJECT CHECK</p><div class="micro-topics">${subject("subject-physics", "PHYSICS", item.physics)}${subject("subject-chemistry", "CHEMISTRY", item.chemistry)}${subject("subject-maths", "MATHS", item.mathematics)}</div></div>${markPill(item.mark)}</article>`).join("");
+    }
+
+    function bestAttemptIndex(attempts) {
+      const values = attempts.map(a => Number(a.mark));
+      if (values.every(Number.isNaN)) return -1;
+      return values[0] >= values[1] ? 0 : 1;
+    }
+
+    function finalRows(evaluations) {
+      return evaluations.map(evaluation => {
+        const best = bestAttemptIndex(evaluation.attempts);
+        const attempts = evaluation.attempts.map((attempt, index) => `<div class="attempt ${best === index ? 'best-attempt' : ''}"><div><span class="attempt-label">${attempt.label}</span><span class="attempt-date">${attempt.date}</span></div>${markPill(attempt.mark)}</div>`).join("");
+        return `<article class="final-evaluation"><div class="final-top"><div><p class="final-title">${escapeHTML(evaluation.number)} — ${escapeHTML(evaluation.title)}</p><p class="final-topic">${escapeHTML(evaluation.topic)}</p></div><span class="best-label">BEST OF 2</span></div><div class="attempts">${attempts}</div></article>`;
+      }).join("");
+    }
+
+    function accordion(title, subtitle, icon, count, content, open = false) {
+      return `<article class="accordion ${open ? 'open' : ''}"><button class="accordion-toggle" type="button" aria-expanded="${open}"><span class="accordion-icon">${icon}</span><span><span class="accordion-title">${title}</span><span class="accordion-subtitle">${subtitle}</span></span><span class="accordion-count">${count}</span><span class="chevron">⌄</span></button><div class="accordion-panel"><div class="accordion-panel-inner"><div class="rows">${content}</div></div></div></article>`;
+    }
+
+    function renderEvaluations() {
+      document.getElementById("accordionList").innerHTML = [
+        accordion("Micro Assignments", "Weekly three-subject Class 12 PCM checks", "◌", "40 TESTS", microRows(microAssignments), true),
+        accordion("Major Assignments", "Milestone tests across the full syllabus", "◈", "4 TESTS", standardRows(majorAssignments)),
+        accordion("Final Evaluations", "Two attempts per evaluation — best attempt highlighted", "✦", "2 EVALUATIONS", finalRows(finalEvaluations))
+      ].join("");
+      document.querySelectorAll(".accordion-toggle").forEach(button => button.addEventListener("click", () => {
+        const item = button.closest(".accordion");
+        const opening = !item.classList.contains("open");
+        item.classList.toggle("open", opening);
+        button.setAttribute("aria-expanded", opening);
+      }));
+      enableCardReactions(document.getElementById("accordionList"));
+    }
+
+    function renderSheetRows(data) {
+      if (!Array.isArray(data) || data.length === 0) {
+        document.getElementById("sheetContent").innerHTML = '<div class="empty-state">No marks are available in the sheet yet.</div>';
+        return;
+      }
+      const rows = data.map(row => `<tr><td>${escapeHTML(row.TestNumber ?? row.testNumber ?? "—")}</td><td>${markPill(row.Marks ?? row.marks ?? "UPCOMING")}</td></tr>`).join("");
+      document.getElementById("sheetContent").innerHTML = `<table class="marks-table"><thead><tr><th scope="col">TEST NUMBER</th><th scope="col">MARKS / 10.0</th></tr></thead><tbody>${rows}</tbody></table>`;
+    }
+
+    async function fetchSheetData() {
+      const content = document.getElementById("sheetContent");
+      const message = document.getElementById("sheetMessage");
+      if (!GOOGLE_SHEET_API_URL) {
+        content.innerHTML = '<div class="empty-state">Add your Apps Script URL to <strong>GOOGLE_SHEET_API_URL</strong> to load live marks.</div>';
+        message.textContent = "Google Sheet URL has not been configured yet.";
+        return;
+      }
+      content.innerHTML = '<div class="sheet-state"><span class="loading-spinner"></span>Syncing your latest CGPA data…</div>';
+      message.textContent = "Connecting to the Google Sheet…";
+      try {
+        const response = await fetch(GOOGLE_SHEET_API_URL, { method: "GET", redirect: "follow" });
+        if (!response.ok) throw new Error(`Request failed (${response.status})`);
+        const data = await response.json();
+        renderSheetRows(data);
+        message.textContent = `Last synced: ${new Date().toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}`;
+      } catch (error) {
+        content.innerHTML = '<div class="empty-state">Unable to load the Google Sheet right now. Check that the Apps Script deployment is accessible to anyone with the link.</div>';
+        message.textContent = "Live sheet connection could not be completed.";
+        console.error("Google Sheet fetch failed:", error);
+      }
+    }
+
+    function initialiseEmbeddedAssets() {
+      document.querySelectorAll("[data-profile-photo]").forEach(image => { image.src = PROFILE_PHOTO_DATA; });
+      document.querySelectorAll("[data-portal-logo]").forEach(image => { image.src = PORTAL_LOGO_DATA; });
+    }
+    initialiseEmbeddedAssets();
+
+    function enableCardReactions(scope = document) {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      scope.querySelectorAll(".login-wrap, .section-card, .accordion, .profile-detail").forEach(card => {
+        if (card.dataset.reactiveReady) return;
+        card.dataset.reactiveReady = "true";
+        card.classList.add("reactive-card");
+        const reset = () => {
+          card.style.setProperty("--tilt-x", "0deg");
+          card.style.setProperty("--tilt-y", "0deg");
+          card.classList.remove("is-reacting", "is-pressed");
+        };
+        card.addEventListener("pointermove", event => {
+          if (event.pointerType !== "mouse" || event.target.closest(".reactive-card") !== card) return;
+          const box = card.getBoundingClientRect();
+          const x = (event.clientX - box.left) / box.width;
+          const y = (event.clientY - box.top) / box.height;
+          card.style.setProperty("--tilt-y", `${((x - .5) * 4).toFixed(2)}deg`);
+          card.style.setProperty("--tilt-x", `${((.5 - y) * 4).toFixed(2)}deg`);
+          card.style.setProperty("--shine-x", `${(x * 100).toFixed(1)}%`);
+          card.style.setProperty("--shine-y", `${(y * 100).toFixed(1)}%`);
+          card.classList.add("is-reacting");
+        });
+        card.addEventListener("pointerleave", reset);
+        card.addEventListener("pointerdown", event => {
+          if (event.target.closest(".reactive-card") === card) card.classList.add("is-pressed");
+        });
+        card.addEventListener("pointerup", () => card.classList.remove("is-pressed"));
+        card.addEventListener("pointercancel", reset);
+      });
+    }
+    enableCardReactions();
+
+    document.getElementById("loginForm").addEventListener("submit", event => {
+      event.preventDefault();
+      const phone = document.getElementById("phone").value.trim();
+      const password = document.getElementById("password").value;
+      if (phone !== "9060170251" || password !== "PASSWORD") {
+        alert("Incorrect phone number or password.");
+        document.getElementById("password").focus();
+        return;
+      }
+      document.getElementById("loginScreen").style.display = "none";
+      const dashboard = document.getElementById("dashboard");
+      dashboard.style.display = "block";
+      dashboard.setAttribute("aria-hidden", "false");
+      renderEvaluations();
+      fetchSheetData();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    document.getElementById("reloadButton").addEventListener("click", fetchSheetData);
+
+    // Responsive animated background, cursor trail and touch response.
+    const canvas = document.getElementById("backgroundCanvas");
+    const context = canvas.getContext("2d");
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const pointer = { x: -500, y: -500 };
+    let particles = [];
+
+    function resizeCanvas() {
+      const density = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.floor(window.innerWidth * density);
+      canvas.height = Math.floor(window.innerHeight * density);
+      context.setTransform(density, 0, 0, density, 0, 0);
+      const total = Math.max(18, Math.min(42, Math.floor(window.innerWidth / 38)));
+      particles = Array.from({ length: total }, () => ({
+        x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight,
+        vx: (Math.random() - .5) * .18, vy: (Math.random() - .5) * .18,
+        radius: Math.random() * 1.9 + .7,
+        color: ["37,99,235", "124,58,237", "6,182,212", "16,185,129"][Math.floor(Math.random() * 4)]
+      }));
+    }
+    function drawBackground() {
+      context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      particles.forEach(particle => {
+        const dx = pointer.x - particle.x, dy = pointer.y - particle.y;
+        const distance = Math.hypot(dx, dy);
+        if (distance < 175) { particle.vx -= dx / 220000; particle.vy -= dy / 220000; }
+        particle.x += particle.vx; particle.y += particle.vy;
+        if (particle.x < -10 || particle.x > window.innerWidth + 10) particle.vx *= -1;
+        if (particle.y < -10 || particle.y > window.innerHeight + 10) particle.vy *= -1;
+        particle.vx *= .995; particle.vy *= .995;
+        context.beginPath(); context.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+        context.fillStyle = `rgba(${particle.color}, .29)`; context.fill();
+      });
+      for (let i = 0; i < particles.length; i += 1) for (let j = i + 1; j < particles.length; j += 1) {
+        const a = particles[i], b = particles[j], distance = Math.hypot(a.x - b.x, a.y - b.y);
+        if (distance < 128) { context.beginPath(); context.moveTo(a.x, a.y); context.lineTo(b.x, b.y); context.strokeStyle = `rgba(37,99,235,${.09 * (1 - distance / 128)})`; context.lineWidth = .7; context.stroke(); }
+      }
+      if (!reduceMotion) requestAnimationFrame(drawBackground);
+    }
+    resizeCanvas(); drawBackground();
+    window.addEventListener("resize", resizeCanvas, { passive: true });
+
+    const glow = document.getElementById("cursorGlow");
+    let lastTrail = 0;
+    function moveTrail(x, y) {
+      pointer.x = x; pointer.y = y;
+      document.documentElement.style.setProperty("--mx", ((x / window.innerWidth) - .5).toFixed(2));
+      document.documentElement.style.setProperty("--my", ((y / window.innerHeight) - .5).toFixed(2));
+      glow.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      const now = performance.now();
+      if (now - lastTrail < 42) return;
+      lastTrail = now;
+      const dot = document.createElement("i");
+      dot.className = "trail-dot";
+      dot.style.left = `${x}px`; dot.style.top = `${y}px`;
+      document.body.appendChild(dot);
+      dot.addEventListener("animationend", () => dot.remove());
+    }
+    window.addEventListener("pointermove", event => moveTrail(event.clientX, event.clientY), { passive: true });
+    window.addEventListener("pointerdown", event => {
+      moveTrail(event.clientX, event.clientY);
+      const ripple = document.createElement("i");
+      ripple.className = "tap-ripple"; ripple.style.left = `${event.clientX}px`; ripple.style.top = `${event.clientY}px`;
+      document.body.appendChild(ripple); ripple.addEventListener("animationend", () => ripple.remove());
+    }, { passive: true });
+  </script>
+</body>
+</html>
