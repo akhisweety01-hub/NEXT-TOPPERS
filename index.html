@@ -463,6 +463,33 @@
         document.getElementById("sheetContent").innerHTML = '<div class="empty-state">No marks are available in the sheet yet.</div>';
         return;
       }
+      const numericMarks = data
+  .map(row => Number(row.Marks ?? row.marks))
+  .filter(mark => Number.isFinite(mark));
+
+const calculatedCGPA = numericMarks.length
+  ? Number((numericMarks.reduce((sum, mark) => sum + mark, 0) / numericMarks.length).toFixed(2))
+  : "UPCOMING";
+
+const rows = data.map(row =>
+  `<tr>
+    <td>${escapeHTML(row.TestNumber ?? row.testNumber ?? "—")}</td>
+    <td>${markPill(row.Marks ?? row.marks ?? "UPCOMING")}</td>
+  </tr>`
+).join("");
+
+document.getElementById("sheetContent").innerHTML = `
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;background:#EFF6FF;border-bottom:1px solid #DBEAFE;">
+    <strong style="color:#1F2937;">CALCULATED TOTAL CGPA</strong>
+    ${markPill(calculatedCGPA)}
+  </div>
+  <table class="marks-table">
+    <thead>
+      <tr><th scope="col">TEST NUMBER</th><th scope="col">MARKS / 10.0</th></tr>
+    </thead>
+    <tbody>${rows}</tbody>
+  </table>
+`;
       const rows = data.map(row => `<tr><td>${escapeHTML(row.TestNumber ?? row.testNumber ?? "—")}</td><td>${markPill(row.Marks ?? row.marks ?? "UPCOMING")}</td></tr>`).join("");
       document.getElementById("sheetContent").innerHTML = `<table class="marks-table"><thead><tr><th scope="col">TEST NUMBER</th><th scope="col">MARKS / 10.0</th></tr></thead><tbody>${rows}</tbody></table>`;
     }
