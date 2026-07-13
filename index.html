@@ -339,20 +339,20 @@
     /* EDIT MARKS HERE: all scheduled marks begin as UPCOMING. Exactly 40 weekly micro tests are listed.
        Note: Apr 6, 2026 + 39 weekly intervals is Jan 4, 2027. Jan 11 would be a 41st date, so it is not included. */
     const microAssignments = [
-      { number: "Micro 01", date: "April 6, 2026", physics: "Electric charge and Coulomb's law", chemistry: "Solid state: unit cells", mathematics: "Relations", mark: "7.5" },
-      { number: "Micro 02", date: "April 13, 2026", physics: "Electric field and field lines", chemistry: "Solid state: crystal lattices", mathematics: "Functions", mark: "6.5" },
-      { number: "Micro 03", date: "April 20, 2026", physics: "Gauss's law and applications", chemistry: "Solid state: defects", mathematics: "Inverse trigonometric functions", mark: "8.0" },
-      { number: "Micro 04", date: "April 27, 2026", physics: "Electric potential", chemistry: "Solutions: concentration terms", mathematics: "Matrices: basics", mark: "8.5" },
-      { number: "Micro 05", date: "May 4, 2026", physics: "Capacitance and dielectrics", chemistry: "Solutions: colligative properties", mathematics: "Matrix operations", mark: "8.5" },
-      { number: "Micro 06", date: "May 11, 2026", physics: "Current and drift velocity", chemistry: "Electrochemistry: conductance", mathematics: "Determinants: properties", mark: "9.0" },
-      { number: "Micro 07", date: "May 18, 2026", physics: "Kirchhoff's laws", chemistry: "Electrochemistry: Nernst equation", mathematics: "Matrices and determinants applications", mark: "9.5" },
-      { number: "Micro 08", date: "May 25, 2026", physics: "Resistance and resistivity", chemistry: "Chemical kinetics: rate law", mathematics: "Continuity", mark: "10.0" },
-      { number: "Micro 09", date: "June 1, 2026", physics: "Lorentz force", chemistry: "Chemical kinetics: order and half-life", mathematics: "Differentiability", mark: "10.0" },
-      { number: "Micro 10", date: "June 8, 2026", physics: "Biot-Savart law", chemistry: "Surface chemistry: adsorption", mathematics: "Derivatives", mark: "6.5" },
-      { number: "Micro 11", date: "June 15, 2026", physics: "Ampere's circuital law", chemistry: "Surface chemistry: colloids and catalysts", mathematics: "Applications of derivatives", mark: "8.0" },
-      { number: "Micro 12", date: "June 22, 2026", physics: "Magnetic dipole and torque", chemistry: "p-Block: Group 15", mathematics: "Indefinite integrals", mark: "7.0" },
-      { number: "Micro 13", date: "June 29, 2026", physics: "Magnetism and matter", chemistry: "p-Block: Groups 16 and 17", mathematics: "Methods of integration", mark: "8.5" },
-      { number: "Micro 14", date: "July 6, 2026", physics: "Electromagnetic induction", chemistry: "d-Block elements", mathematics: "Definite integrals", mark: "8.0" },
+      { number: "Micro 01", date: "April 6, 2026", physics: "Electric charge and Coulomb's law", chemistry: "Solid state: unit cells", mathematics: "Relations", mark: "UPCOMING" },
+      { number: "Micro 02", date: "April 13, 2026", physics: "Electric field and field lines", chemistry: "Solid state: crystal lattices", mathematics: "Functions", mark: "UPCOMING" },
+      { number: "Micro 03", date: "April 20, 2026", physics: "Gauss's law and applications", chemistry: "Solid state: defects", mathematics: "Inverse trigonometric functions", mark: "UPCOMING" },
+      { number: "Micro 04", date: "April 27, 2026", physics: "Electric potential", chemistry: "Solutions: concentration terms", mathematics: "Matrices: basics", mark: "UPCOMING" },
+      { number: "Micro 05", date: "May 4, 2026", physics: "Capacitance and dielectrics", chemistry: "Solutions: colligative properties", mathematics: "Matrix operations", mark: "UPCOMING" },
+      { number: "Micro 06", date: "May 11, 2026", physics: "Current and drift velocity", chemistry: "Electrochemistry: conductance", mathematics: "Determinants: properties", mark: "UPCOMING" },
+      { number: "Micro 07", date: "May 18, 2026", physics: "Kirchhoff's laws", chemistry: "Electrochemistry: Nernst equation", mathematics: "Matrices and determinants applications", mark: "UPCOMING" },
+      { number: "Micro 08", date: "May 25, 2026", physics: "Resistance and resistivity", chemistry: "Chemical kinetics: rate law", mathematics: "Continuity", mark: "UPCOMING" },
+      { number: "Micro 09", date: "June 1, 2026", physics: "Lorentz force", chemistry: "Chemical kinetics: order and half-life", mathematics: "Differentiability", mark: "UPCOMING" },
+      { number: "Micro 10", date: "June 8, 2026", physics: "Biot-Savart law", chemistry: "Surface chemistry: adsorption", mathematics: "Derivatives", mark: "UPCOMING" },
+      { number: "Micro 11", date: "June 15, 2026", physics: "Ampere's circuital law", chemistry: "Surface chemistry: colloids and catalysts", mathematics: "Applications of derivatives", mark: "UPCOMING" },
+      { number: "Micro 12", date: "June 22, 2026", physics: "Magnetic dipole and torque", chemistry: "p-Block: Group 15", mathematics: "Indefinite integrals", mark: "UPCOMING" },
+      { number: "Micro 13", date: "June 29, 2026", physics: "Magnetism and matter", chemistry: "p-Block: Groups 16 and 17", mathematics: "Methods of integration", mark: "UPCOMING" },
+      { number: "Micro 14", date: "July 6, 2026", physics: "Electromagnetic induction", chemistry: "d-Block elements", mathematics: "Definite integrals", mark: "UPCOMING" },
       { number: "Micro 15", date: "July 13, 2026", physics: "Lenz's law and self induction", chemistry: "f-Block elements", mathematics: "Applications of integrals", mark: "UPCOMING" },
       { number: "Micro 16", date: "July 20, 2026", physics: "Alternating current", chemistry: "Coordination: nomenclature", mathematics: "Differential equations: formation", mark: "UPCOMING" },
       { number: "Micro 17", date: "July 27, 2026", physics: "Transformer and resonance", chemistry: "Coordination: bonding and isomerism", mathematics: "Differential equations: solutions", mark: "UPCOMING" },
@@ -459,39 +459,38 @@
     }
 
     function renderSheetRows(data) {
+      const sheetContent = document.getElementById("sheetContent");
       if (!Array.isArray(data) || data.length === 0) {
-        document.getElementById("sheetContent").innerHTML = '<div class="empty-state">No marks are available in the sheet yet.</div>';
+        sheetContent.innerHTML = '<div class="empty-state">No marks are available in the sheet yet.</div>';
         return;
       }
+
+      // CGPA is the average of valid numeric marks from the Google Sheet.
+      // Blank values and UPCOMING values are ignored.
       const numericMarks = data
-  .map(row => Number(row.Marks ?? row.marks))
-  .filter(mark => Number.isFinite(mark));
+        .map(row => Number(row.Marks ?? row.marks))
+        .filter(mark => Number.isFinite(mark));
+      const calculatedCGPA = numericMarks.length > 0
+        ? Number((numericMarks.reduce((total, mark) => total + mark, 0) / numericMarks.length).toFixed(2))
+        : "UPCOMING";
 
-const calculatedCGPA = numericMarks.length
-  ? Number((numericMarks.reduce((sum, mark) => sum + mark, 0) / numericMarks.length).toFixed(2))
-  : "UPCOMING";
+      const rows = data.map(row => `
+        <tr>
+          <td>${escapeHTML(row.TestNumber ?? row.testNumber ?? "-")}</td>
+          <td>${markPill(row.Marks ?? row.marks ?? "UPCOMING")}</td>
+        </tr>
+      `).join("");
 
-const rows = data.map(row =>
-  `<tr>
-    <td>${escapeHTML(row.TestNumber ?? row.testNumber ?? "—")}</td>
-    <td>${markPill(row.Marks ?? row.marks ?? "UPCOMING")}</td>
-  </tr>`
-).join("");
-
-document.getElementById("sheetContent").innerHTML = `
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;background:#EFF6FF;border-bottom:1px solid #DBEAFE;">
-    <strong style="color:#1F2937;">CALCULATED TOTAL CGPA</strong>
-    ${markPill(calculatedCGPA)}
-  </div>
-  <table class="marks-table">
-    <thead>
-      <tr><th scope="col">TEST NUMBER</th><th scope="col">MARKS / 10.0</th></tr>
-    </thead>
-    <tbody>${rows}</tbody>
-  </table>
-`;
-      const rows = data.map(row => `<tr><td>${escapeHTML(row.TestNumber ?? row.testNumber ?? "—")}</td><td>${markPill(row.Marks ?? row.marks ?? "UPCOMING")}</td></tr>`).join("");
-      document.getElementById("sheetContent").innerHTML = `<table class="marks-table"><thead><tr><th scope="col">TEST NUMBER</th><th scope="col">MARKS / 10.0</th></tr></thead><tbody>${rows}</tbody></table>`;
+      sheetContent.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;background:#EFF6FF;border-bottom:1px solid #DBEAFE;">
+          <strong style="color:#1F2937;">CALCULATED TOTAL CGPA</strong>
+          ${markPill(calculatedCGPA)}
+        </div>
+        <table class="marks-table">
+          <thead><tr><th scope="col">TEST NUMBER</th><th scope="col">MARKS / 10.0</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
     }
 
     async function fetchSheetData() {
